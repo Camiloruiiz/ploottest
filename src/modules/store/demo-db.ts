@@ -38,6 +38,10 @@ declare global {
   var __ploottestDemoDb: DemoDb | undefined;
 }
 
+function getDemoNowMs() {
+  return process.env.PLOOTTEST_FIXED_NOW ? new Date(process.env.PLOOTTEST_FIXED_NOW).getTime() : Date.now();
+}
+
 function createInitialProducts() {
   return fallbackProducts.map((product) => ({ ...product }));
 }
@@ -73,7 +77,7 @@ export function createMagicLink(email: string, next: string) {
   getDemoDb().magicLinks.set(token, {
     email,
     next,
-    expires_at: Date.now() + 15 * 60_000,
+    expires_at: getDemoNowMs() + 15 * 60_000,
   });
   return token;
 }
@@ -87,7 +91,7 @@ export function consumeMagicLink(token: string) {
 
   getDemoDb().magicLinks.delete(token);
 
-  if (payload.expires_at < Date.now()) {
+  if (payload.expires_at < getDemoNowMs()) {
     return null;
   }
 

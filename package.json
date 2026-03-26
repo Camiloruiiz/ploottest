@@ -13,9 +13,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 npm run build && PLOOTTEST_FORCE_DEMO=1 playwright test",
-    "test:visual": "PLOOTTEST_FORCE_DEMO=1 npm run build && PLOOTTEST_FORCE_DEMO=1 playwright test tests/e2e/visual --update-snapshots",
-    "test:ui": "PLOOTTEST_FORCE_DEMO=1 npm run build && PLOOTTEST_FORCE_DEMO=1 playwright test tests/e2e/app-home.spec.ts --update-snapshots",
+    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test",
+    "test:visual": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/visual --update-snapshots",
+    "test:ui": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/app-home.spec.ts --update-snapshots",
     "seed:products": "tsx scripts/seed-products.ts"
   },
   "dependencies": {

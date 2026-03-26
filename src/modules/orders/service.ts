@@ -40,7 +40,9 @@ export function createOrderForUser(email: string, items: CheckoutItem[]): DemoOr
   });
 
   const orderId = randomUUID();
-  const createdAt = new Date().toISOString();
+  const createdAt = process.env.PLOOTTEST_FIXED_NOW
+    ? new Date(process.env.PLOOTTEST_FIXED_NOW).toISOString()
+    : new Date().toISOString();
   const orderItems = affectedProducts.map(({ product, quantity }) => ({
     id: randomUUID(),
     order_id: orderId,
