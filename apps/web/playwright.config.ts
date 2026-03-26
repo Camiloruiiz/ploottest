@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
   workers,
+  snapshotPathTemplate: "{testDir}/../regressions/{testFilePath}/{arg}-{projectName}-{platform}{ext}",
   use: {
     baseURL: `http://127.0.0.1:${port}`,
     trace: "on-first-retry",
