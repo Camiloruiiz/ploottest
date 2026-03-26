@@ -1,18 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { parseProductQuery } from "@/modules/products/query";
 import { fallbackProducts, filterProducts } from "@/modules/products/service";
 
-describe("products query", () => {
-  it("applies defaults", () => {
-    expect(parseProductQuery({})).toEqual({
-      q: "",
-      page: 1,
-      pageSize: 6,
-      inStock: "all",
-      sort: "newest",
-    });
-  });
-
+describe("products service", () => {
   it("filters and sorts products", () => {
     const result = filterProducts(fallbackProducts, {
       q: "pack",

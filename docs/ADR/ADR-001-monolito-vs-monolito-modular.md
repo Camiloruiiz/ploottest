@@ -2,7 +2,7 @@
 
 ## Estado
 
-Aprobada
+Supercedida
 
 ## Contexto
 
@@ -47,3 +47,7 @@ Se descarta en esta etapa porque añade una estructura mas estricta y decisiones
 ## Revision futura
 
 Revisar esta decision si el sistema crece en complejidad funcional, aparecen mas contribuidores o el acoplamiento interno empieza a penalizar mantenibilidad. En ese escenario, el siguiente paso natural seria evolucionar hacia un monolito modular.
+
+## Supercedida por
+
+- `ADR-009-monorepo-workspace-adoption.md`

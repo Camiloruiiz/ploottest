@@ -88,12 +88,14 @@ Documentos de referencia:
 
 ## 2. Restricciones de arquitectura
 
-- una sola base de codigo
-- frontend y backend en el mismo repositorio
+- una sola base de codigo organizada como workspace
+- frontend y backend en el mismo monorepo
 - frontend implementado con React
 - framework principal basado en Next.js App Router
 - libreria de componentes basada en shadcn/ui
 - stack principal basado en TypeScript
+- gestion del workspace con `pnpm`
+- orquestacion de tareas con `Turborepo`
 - integracion con Supabase para autenticacion y persistencia
 - despliegue principal sobre Vercel
 - prioridad a simplicidad operativa, mantenibilidad y consistencia de negocio
@@ -159,13 +161,15 @@ Requerimientos relacionados:
 
 ### 4.1 Enfoque general
 
-Se adopta un monolito simple implementado con Next.js. Esta eleccion ha permitido construir primero una plataforma ejecutable y deja el dominio funcional preparado para completarse por fases.
+Se adopta un monorepo ligero implementado con `pnpm` y `Turborepo`, manteniendo `apps/web` como aplicacion principal. Esta eleccion permite conservar una unica solucion desplegable, pero con una organizacion de codigo mas preparada para crecer en configuracion, tooling y futuras piezas del sistema.
 
 ### 4.2 Stack tecnologico
 
 | Tecnologia | Rol | Version objetivo |
 | --- | --- | --- |
 | Node.js | runtime de desarrollo y build | 20.x |
+| pnpm workspace | gestion del monorepo y dependencias | 10.x |
+| Turborepo | orquestacion de tareas del workspace | 2.x |
 | Next.js App Router | framework full stack para UI, routing y endpoints | 15.x |
 | React | composicion de interfaz y componentes | 19.x |
 | TypeScript | tipado estatico y contratos entre capas | 5.x |
@@ -204,7 +208,7 @@ Tabla de decisiones:
 
 | Decision | Motivo | Impacto |
 | --- | --- | --- |
-| Monolito simple | acelerar la primera version | menos complejidad estructural inicial |
+| Monorepo ligero | escalar el repositorio sin separar el despliegue principal | mejor organizacion de app y paquetes compartidos |
 | `localStorage` para carrito | resolver rapido el estado temporal | sin sincronizacion multi-dispositivo |
 | Bootstrap desde `.json` | reducir friccion de arranque | catalogo inicial rapido, sin backoffice |
 | Supabase como BaaS | simplificar auth y persistencia | dependencia de plataforma |
@@ -236,13 +240,15 @@ Todo lo demas queda como evolucion posterior.
 
 El sistema se organiza en cuatro bloques principales:
 
-- `Frontend Next.js`: storefront, carrito, auth y pedidos
-- `Backend Next.js`: endpoints HTTP y logica de aplicacion
+- `Monorepo`: organizacion del codigo en `apps/*` y `packages/*`
+- `Frontend Next.js`: storefront, carrito, auth y pedidos en `apps/web`
+- `Backend Next.js`: endpoints HTTP y logica de aplicacion en `apps/web`
 - `Supabase`: autenticacion y persistencia real
 - `Cliente`: navegador y `localStorage` para estado temporal
 
 ```mermaid
 flowchart LR
+    Monorepo[Monorepo<br/>pnpm + Turborepo]
     Browser[Cliente / Browser]
     Frontend[Frontend Next.js<br/>Storefront, Cart, Auth, Orders]
     Backend[Backend Next.js<br/>App Router + API Routes]
@@ -251,6 +257,8 @@ flowchart LR
     DB[Supabase PostgreSQL]
     Seed[Bootstrap JSON]
 
+    Monorepo --> Frontend
+    Monorepo --> Backend
     Browser --> Frontend
     Frontend --> Backend
     Frontend <--> LocalStorage
@@ -263,6 +271,7 @@ flowchart LR
 
 | Componente | Tipo | Responsabilidad | Estado |
 | --- | --- | --- | --- |
+| Monorepo workspace | estructura | organizar apps y paquetes compartidos | implementado |
 | Frontend Storefront | cliente | mostrar catalogo, filtros, carrito y vistas de usuario | implementado |
 | Backend API | servidor | exponer endpoints y coordinar validacion y dominio | implementado |
 | Catalogo | dominio | consulta de productos, filtros, busqueda y paginacion | implementado |
@@ -277,6 +286,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
+    Workspace[workspace<br/>apps/web + packages/*]
     App[app<br/>page.tsx, cart, auth, orders]
     Providers[components/providers<br/>QueryProvider + CartProvider]
     Store[components/store<br/>Storefront, CartScreen, AuthScreen, OrdersScreen]
@@ -284,6 +294,7 @@ flowchart TB
     Hooks[hooks<br/>use-healthcheck]
     CartDomain[modules/cart<br/>reglas de carrito]
 
+    Workspace --> App
     App --> Providers
     Providers --> Store
     Store --> UI
@@ -293,6 +304,7 @@ flowchart TB
 
 | Bloque | Responsabilidad |
 | --- | --- |
+| `workspace` | organizar aplicaciones y configuraciones compartidas |
 | `app` | entrypoints de paginas y rutas del App Router |
 | `components/providers` | contexto global de React Query y carrito |
 | `components/store` | pantallas funcionales del producto |
@@ -738,7 +750,6 @@ Las decisiones formales se documentan en `docs/ADR/`.
 
 ADRs vigentes del sistema:
 
-- ADR-001: monolito vs monolito modular
 - ADR-002: decision de alcance de la primera version
 - ADR-003: carrito persistido en cliente
 - ADR-004: despliegue sobre Vercel
@@ -746,6 +757,7 @@ ADRs vigentes del sistema:
 - ADR-006: Supabase como BaaS
 - ADR-007: carga inicial desde `.json`
 - ADR-008: estrategia de testing
+- ADR-009: adopcion de monorepo con workspace
 
 ## 10. Requisitos de calidad
 
@@ -841,7 +853,7 @@ Direccion de evolucion deseada:
 - procesamiento asincrono para desacoplar operaciones que no necesiten completarse dentro del ciclo request/response
 - evolucion hacia una arquitectura mas orientada a eventos para separar mejor responsabilidades y flujos
 - modularizacion progresiva de dominios como catalogo, pedidos y usuarios
-- posible evolucion futura del repositorio a un esquema de monorepo si aparecen nuevas aplicaciones, paquetes o servicios auxiliares
+- evolucion futura del monorepo hacia una estructura con mas apps, paquetes o servicios auxiliares si el producto lo requiere
 - incorporacion de CI/CD para validacion automatica, pruebas y despliegues controlados
 - observabilidad avanzada con mejores capacidades de monitoreo, trazabilidad y diagnostico
 - integraciones futuras con servicios externos, automatizaciones o capacidades adicionales del producto

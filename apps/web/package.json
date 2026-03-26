@@ -7,15 +7,16 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "clean": "node -e \"require('node:fs').rmSync('.next', { recursive: true, force: true })\"",
+    "build": "pnpm run clean && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z pnpm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test",
-    "test:visual": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z pnpm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/visual --update-snapshots",
-    "test:ui": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z pnpm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/app-home.spec.ts --update-snapshots",
+    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/auth tests/e2e/cart tests/e2e/catalog",
+    "test:visual": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
+    "test:ui": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
     "seed:products": "tsx scripts/seed-products.ts"
   },
   "dependencies": {

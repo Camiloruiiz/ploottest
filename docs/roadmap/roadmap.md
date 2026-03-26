@@ -157,7 +157,7 @@ Estas capacidades no forman parte del alcance actual ni del siguiente paso inmed
 
 - evolucion hacia limites mas claros entre catalogo, pedidos y usuarios
 - posible paso posterior a un monolito mas modular
-- posible evolucion a monorepo si aparecen nuevas apps, paquetes o servicios auxiliares
+- evolucion del monorepo actual si aparecen nuevas apps, paquetes o servicios auxiliares
 
 ### CI/CD
 
