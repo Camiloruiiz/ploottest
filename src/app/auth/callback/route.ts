@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
+import { isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
+import { createRouteHandlerClient } from "@/lib/db/supabase-server";
 import { getDemoSessionCookieConfig } from "@/modules/auth/session";
 import { consumeMagicLink } from "@/modules/store/demo-db";
 
@@ -11,8 +11,7 @@ export async function GET(request: Request) {
   const code = url.searchParams.get("code");
 
   if (code && !shouldUseDemoMode() && isSupabaseConfigured()) {
-    const env = getPublicEnv();
-    const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    const supabase = await createRouteHandlerClient();
     await supabase.auth.exchangeCodeForSession(code);
     return NextResponse.redirect(new URL(next, url));
   }

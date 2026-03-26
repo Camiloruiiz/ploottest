@@ -5,6 +5,7 @@ import { createRouteHandlerClient } from "@/lib/db/supabase-server";
 import { createOrderRequestSchema, orderListResponseSchema } from "@/lib/validation/orders";
 import { getCurrentUser } from "@/modules/auth/session";
 import { createOrderForUser, listOrdersForUser } from "@/modules/orders/service";
+import { createSupabaseOrderForUser, listSupabaseOrdersForUser } from "@/modules/orders/supabase";
 
 export async function GET(request: Request) {
   if (shouldUseDemoMode() || !isSupabaseConfigured()) {
@@ -38,21 +39,20 @@ export async function GET(request: Request) {
     );
   }
 
-  const { data, error } = await supabase
-    .from("orders")
-    .select("id,user_id,user_email,status,total_cents,created_at,items:order_items(id,order_id,product_id,quantity,unit_price_cents,subtotal_cents,product_name)")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+  try {
+    const items = await listSupabaseOrdersForUser(supabase as any, user.id);
+    const payload = orderListResponseSchema.parse({ items });
+    return NextResponse.json(ok(payload));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(apiErrorResponse(error), { status: error.status });
+    }
 
-  if (error) {
     return NextResponse.json(
-      apiErrorResponse(new ApiError("orders_fetch_failed", error.message, 500)),
+      apiErrorResponse(new ApiError("orders_fetch_failed", "Unable to load orders.", 500)),
       { status: 500 },
     );
   }
-
-  const payload = orderListResponseSchema.parse({ items: data ?? [] });
-  return NextResponse.json(ok(payload));
 }
 
 export async function POST(request: Request) {
@@ -93,8 +93,37 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json(
-    apiErrorResponse(new ApiError("orders_not_implemented", "Supabase checkout RPC is still pending.", 501)),
-    { status: 501 },
-  );
+  const supabase = await createRouteHandlerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return NextResponse.json(
+      apiErrorResponse(new ApiError("auth_required", "Authentication is required.", 401)),
+      { status: 401 },
+    );
+  }
+
+  try {
+    const order = await createSupabaseOrderForUser(
+      supabase as any,
+      {
+        id: user.id,
+        email: user.email,
+      },
+      parsed.data.items,
+    );
+
+    return NextResponse.json(ok(order), { status: 201 });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(apiErrorResponse(error), { status: error.status });
+    }
+
+    return NextResponse.json(
+      apiErrorResponse(new ApiError("orders_create_failed", "Unable to create the order.", 500)),
+      { status: 500 },
+    );
+  }
 }

@@ -4,7 +4,7 @@
 
 ### 1.1 Proposito
 
-Este documento describe la arquitectura del estado actual del sistema y su siguiente fase funcional. Hoy el proyecto ya cuenta con una base tecnica ejecutable y con una primera capa funcional operativa: catalogo, carrito, autenticacion y consulta de pedidos. El siguiente paso prioritario es completar el checkout real con Supabase para persistir pedidos, lineas y stock en la base de datos.
+Este documento describe la arquitectura del estado actual del sistema. Hoy el proyecto ya cuenta con una base tecnica ejecutable y con una primera capa funcional operativa: catalogo, carrito, autenticacion, checkout y consulta de pedidos, tanto con soporte demo como con integracion real con Supabase. El trabajo posterior se centra en endurecimiento, robustez transaccional y ampliacion de pruebas.
 
 Decision de velocidad:
 
@@ -19,6 +19,8 @@ Estado actual implementado:
 - catalogo de productos con busqueda, filtros y paginacion
 - carrito persistido en cliente
 - autenticacion por magic link
+- checkout funcional en modo demo
+- checkout funcional en modo Supabase
 - consulta de pedidos del usuario
 - API minima para productos y pedidos
 - validacion de variables de entorno
@@ -31,11 +33,10 @@ Estado actual implementado:
 
 Siguiente alcance funcional:
 
-- checkout real con validacion de stock sobre Supabase
-- persistencia real de `orders` y `order_items`
-- descuento real de stock en base de datos
-- endurecimiento del flujo de compra con errores estructurados
-- ampliacion de pruebas sobre el flujo real con Supabase
+- reforzar atomicidad y consistencia del checkout persistente
+- endurecer errores estructurados del flujo de compra
+- ampliar pruebas sobre el flujo real con Supabase
+- mejorar observabilidad operativa del sistema
 
 Requerimientos relacionados:
 
@@ -218,103 +219,207 @@ Estado actual:
 - bootstrap de productos desde `.json` disponible
 - validaciones y testing base disponibles
 - catalogo, carrito, autenticacion y consulta de pedidos ya operativos
-- checkout disponible en modo demo y parcial en modo Supabase
+- checkout disponible en modo demo y en modo Supabase
 
 Siguiente fase:
 
-1. implementar `POST /api/v1/orders` real sobre Supabase
-2. persistir `orders` y `order_items`
-3. descontar stock de forma consistente
-4. ampliar pruebas sobre el flujo real de compra
+1. reforzar atomicidad y consistencia del checkout real
+2. endurecer errores y validaciones del flujo autenticado
+3. ampliar pruebas sobre el flujo real de compra
+4. mejorar observabilidad de diagnostico en produccion
 
 Todo lo demas queda como evolucion posterior.
 
-## 5. Vista de bloques
+## 5. Vista estatica
 
-### 5.1 Vista de alto nivel
+### 5.1 Arquitectura de alto nivel
 
-El sistema se divide en los siguientes bloques:
+El sistema se organiza en cuatro bloques principales:
 
-- `products`: consulta de catalogo, filtros y paginacion
-- `cart`: estado local del carrito y validaciones previas a checkout
-- `orders`: creacion de pedidos, consulta historica y validacion de ownership
-- `auth`: login y contexto de usuario
-- `api`: adaptadores HTTP y validacion de requests
-- `db`: acceso a Supabase/PostgreSQL
+- `Frontend Next.js`: storefront, carrito, auth y pedidos
+- `Backend Next.js`: endpoints HTTP y logica de aplicacion
+- `Supabase`: autenticacion y persistencia real
+- `Cliente`: navegador y `localStorage` para estado temporal
 
-Whitebox del sistema:
+```mermaid
+flowchart LR
+    Browser[Cliente / Browser]
+    Frontend[Frontend Next.js<br/>Storefront, Cart, Auth, Orders]
+    Backend[Backend Next.js<br/>App Router + API Routes]
+    LocalStorage[localStorage<br/>Carrito]
+    Auth[Supabase Auth]
+    DB[Supabase PostgreSQL]
+    Seed[Bootstrap JSON]
 
-| Bloque | Responsabilidad principal |
-| --- | --- |
-| UI/App | implementado como storefront operativa |
-| Catalogo | implementado con consulta, busqueda, filtros y paginacion |
-| Carrito | implementado con persistencia en `localStorage` |
-| Checkout/Pedidos | implementado en modo demo y parcial en modo Supabase |
-| Auth | implementado con magic link |
-| Persistencia | implementado mediante Supabase y carga inicial |
-
-### 5.2 Descomposicion interna propuesta
-
-```text
-src/
-  app/
-  modules/
-    products/
-    cart/
-    orders/
-    auth/
-  lib/
-    db/
-    validation/
-    api/
-  components/
-  hooks/
+    Browser --> Frontend
+    Frontend --> Backend
+    Frontend <--> LocalStorage
+    Backend <--> Auth
+    Backend <--> DB
+    Seed --> Backend
 ```
 
-Whitebox de la aplicacion:
+### 5.2 Componentes principales del sistema
 
-| Bloque interno | Responsabilidad |
+| Componente | Tipo | Responsabilidad | Estado |
+| --- | --- | --- | --- |
+| Frontend Storefront | cliente | mostrar catalogo, filtros, carrito y vistas de usuario | implementado |
+| Backend API | servidor | exponer endpoints y coordinar validacion y dominio | implementado |
+| Catalogo | dominio | consulta de productos, filtros, busqueda y paginacion | implementado |
+| Carrito | dominio cliente | gestionar items y persistirlos en `localStorage` | implementado |
+| Auth | dominio | login por magic link y resolucion de sesion | implementado |
+| Checkout/Pedidos | dominio | crear pedidos y consultar historial | implementado |
+| Integracion Supabase | infraestructura | auth, DB y RPC de checkout | implementado |
+| Demo fallback | infraestructura | datos y sesiones locales para desarrollo | implementado |
+| Bootstrap inicial | soporte operativo | cargar catalogo inicial desde `.json` | implementado |
+
+### 5.3 Whitebox del frontend
+
+```mermaid
+flowchart TB
+    App[app<br/>page.tsx, cart, auth, orders]
+    Providers[components/providers<br/>QueryProvider + CartProvider]
+    Store[components/store<br/>Storefront, CartScreen, AuthScreen, OrdersScreen]
+    UI[components/ui<br/>Button, Card, Input, Badge]
+    Hooks[hooks<br/>use-healthcheck]
+    CartDomain[modules/cart<br/>reglas de carrito]
+
+    App --> Providers
+    Providers --> Store
+    Store --> UI
+    Store --> Hooks
+    Providers --> CartDomain
+```
+
+| Bloque | Responsabilidad |
 | --- | --- |
-| `app` | rutas, paginas y endpoints |
-| `modules` | dominios preparados para la siguiente fase funcional |
-| `lib` | integraciones, validacion y utilidades compartidas ya disponibles |
-| `components` | piezas reutilizables de UI y pantalla base implementada |
-| `hooks` | comportamiento reutilizable en cliente |
+| `app` | entrypoints de paginas y rutas del App Router |
+| `components/providers` | contexto global de React Query y carrito |
+| `components/store` | pantallas funcionales del producto |
+| `components/ui` | primitives reutilizables de interfaz |
+| `hooks` | hooks auxiliares de cliente |
 
-### 5.3 Dominio critico: pedidos
+### 5.4 Whitebox del backend
 
-El flujo de pedidos concentra el mayor riesgo tecnico del sistema.
+```mermaid
+flowchart TB
+    Api[app/api/v1<br/>products, orders, auth]
+    Validation[lib/validation<br/>products, orders, auth]
+    Http[lib/api<br/>ok, ApiError, error responses]
+    DB[lib/db<br/>supabase-browser, server, admin]
+    Products[modules/products]
+    Orders[modules/orders]
+    Auth[modules/auth]
+    Demo[modules/store/demo-db]
+
+    Api --> Validation
+    Api --> Http
+    Api --> Products
+    Api --> Orders
+    Api --> Auth
+    Api --> DB
+    Api --> Demo
+```
+
+| Bloque | Responsabilidad |
+| --- | --- |
+| `app/api/v1` | adaptadores HTTP del sistema |
+| `lib/validation` | contratos Zod de entrada y salida |
+| `lib/api` | respuestas estructuradas y errores |
+| `lib/db` | clientes de Supabase para browser, server y admin |
+| `modules/products` | query parsing y filtrado/catalogo |
+| `modules/orders` | checkout, listado y acceso a pedidos |
+| `modules/auth` | sesion, logout y utilidades de usuario |
+| `modules/store/demo-db` | fallback local para desarrollo y pruebas |
+
+### 5.5 Whitebox de integraciones y persistencia
+
+```mermaid
+flowchart LR
+    Api[API Routes]
+    Env[lib/config/env]
+    SupabaseClients[lib/db/supabase-*]
+    Auth[Supabase Auth]
+    DB[Supabase PostgreSQL]
+    Demo[modules/store/demo-db]
+    SeedScript[scripts/seed-products.ts]
+    SeedJson[src/lib/data/products.seed.json]
+
+    Env --> SupabaseClients
+    Api --> Env
+    Api --> SupabaseClients
+    SupabaseClients --> Auth
+    SupabaseClients --> DB
+    Api --> Demo
+    SeedJson --> SeedScript
+    SeedScript --> DB
+```
+
+Esta vista deja claro que el sistema soporta dos caminos operativos:
+
+- `modo Supabase`: usa auth y base de datos reales
+- `modo demo`: usa `demo-db` y sesion local cuando no hay configuracion o se fuerza el fallback
+
+### 5.6 Dominio critico: checkout y pedidos
+
+El dominio de pedidos concentra el mayor riesgo tecnico del sistema porque afecta autenticacion, stock y persistencia.
+
+```mermaid
+flowchart TD
+    Input[Payload del carrito]
+    Validate[Validacion Zod]
+    Session[Resolucion de sesion]
+    Mode{Demo o Supabase}
+    DemoFlow[createOrderForUser]
+    RpcFlow[createSupabaseOrderForUser]
+    Persist[orders + order_items + stock]
+    Output[Respuesta OK o error estructurado]
+
+    Input --> Validate --> Session --> Mode
+    Mode -->|Demo| DemoFlow
+    Mode -->|Supabase| RpcFlow
+    DemoFlow --> Output
+    RpcFlow --> Persist --> Output
+```
 
 | Paso | Responsabilidad |
 | --- | --- |
-| Validacion | validar sesion y payload antes de operar |
-| Lectura | cargar productos afectados y estado actual |
-| Verificacion | comprobar stock disponible |
-| Creacion | crear `order` y `order_items` |
-| Persistencia final | descontar stock y confirmar resultado |
+| Validacion | validar payload del checkout antes de operar |
+| Sesion | resolver usuario actual en demo o Supabase |
+| Seleccion de modo | elegir flujo demo o flujo persistente real |
+| Checkout | crear pedido y lineas correspondientes |
+| Persistencia | mantener consistencia entre pedido, lineas y stock |
 
-## 6. Vista de tiempo de ejecucion
+## 6. Vista dinamica
 
-### 6.1 Consulta de catalogo
+### 6.1 Catalogo
 
-1. el usuario abre el catalogo
-2. el frontend solicita productos con criterios de busqueda y paginacion
-3. la API valida query params
-4. la capa `products` consulta base de datos
-5. se devuelve listado paginado
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant S as Storefront
+    participant API as GET /api/v1/products
+    participant MODE as Demo/Supabase
+    participant DATA as Demo DB o Supabase PostgreSQL
 
-Disparador:
-
-- el usuario accede al catalogo o ejecuta una busqueda
+    U->>S: abre home o cambia filtros
+    S->>API: solicita catalogo paginado
+    API->>API: valida query params
+    API->>MODE: resuelve modo de ejecucion
+    MODE->>DATA: consulta productos
+    DATA-->>API: items + metadatos
+    API-->>S: respuesta estructurada
+    S-->>U: renderiza catalogo
+```
 
 Resultado esperado:
 
-- listado de productos filtrado y paginado
+- listado paginado con busqueda, orden y filtro de stock
 
 Errores relevantes:
 
 - query invalida
-- fallo de acceso a datos
+- fallo de lectura de datos
 
 Requerimientos relacionados:
 
@@ -324,32 +429,70 @@ Requerimientos relacionados:
 - RF-014
 - RNF-006
 
-### 6.2 Checkout
+### 6.2 Login con magic link
 
-1. el usuario confirma carrito
-2. el frontend envia items a `POST /api/v1/orders`
-3. la API valida autenticacion y payload
-4. la capa `orders` carga productos afectados
-5. se verifica stock
-6. se crea `order`
-7. se crean `order_items`
-8. se decrementa stock
-9. se devuelve resultado o error estructurado
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant A as AuthScreen
+    participant API as POST /api/v1/auth/magic-link
+    participant MODE as Demo/Supabase
+    participant AUTH as Supabase Auth o demo-db
+    participant CB as /auth/callback
 
-Disparador:
-
-- el usuario autenticado confirma el checkout
+    U->>A: introduce email
+    A->>API: envia email y next
+    API->>API: valida payload
+    API->>MODE: resuelve modo de ejecucion
+    MODE->>AUTH: genera magic link o token demo
+    AUTH-->>API: resultado
+    API-->>A: mensaje y enlace/callback
+    U->>CB: sigue magic link
+    CB-->>U: sesion disponible
+```
 
 Resultado esperado:
 
-- pedido creado con lineas y stock actualizado
+- usuario autenticado y redirigido a la siguiente pantalla
+
+Errores relevantes:
+
+- email invalido
+- fallo del proveedor auth
+
+### 6.3 Checkout
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant C as CartScreen
+    participant API as POST /api/v1/orders
+    participant O as Orders module
+    participant MODE as Demo/Supabase
+    participant DATA as Demo DB o Supabase RPC
+
+    U->>C: confirma checkout
+    C->>API: envia items del carrito
+    API->>API: valida payload y sesion
+    API->>MODE: resuelve modo de ejecucion
+    MODE->>O: delega checkout
+    O->>DATA: crea pedido y valida stock
+    DATA-->>O: pedido creado o error
+    O-->>API: resultado estructurado
+    API-->>C: respuesta 201 o error
+    C-->>U: redirige a /orders o muestra error
+```
+
+Resultado esperado:
+
+- pedido creado y carrito vaciado
 
 Errores relevantes:
 
 - usuario no autenticado
 - payload invalido
 - stock insuficiente
-- error transaccional
+- fallo de persistencia
 
 Requerimientos relacionados:
 
@@ -362,21 +505,29 @@ Requerimientos relacionados:
 - RNF-002
 - RNF-011
 
-### 6.3 Consulta de pedidos
+### 6.4 Consulta de pedidos
 
-1. el usuario autenticado accede a su area privada
-2. el frontend consulta `GET /api/v1/orders`
-3. la API valida sesion
-4. se filtra por `user_id`
-5. se devuelve solo informacion propia
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant OUI as OrdersScreen
+    participant API as GET /api/v1/orders
+    participant MODE as Demo/Supabase
+    participant DATA as Demo DB o Supabase PostgreSQL
 
-Disparador:
-
-- el usuario autenticado accede a su historial
+    U->>OUI: abre historial
+    OUI->>API: solicita pedidos
+    API->>API: valida sesion
+    API->>MODE: resuelve modo de ejecucion
+    MODE->>DATA: consulta pedidos del usuario
+    DATA-->>API: listado filtrado
+    API-->>OUI: respuesta estructurada
+    OUI-->>U: renderiza historial
+```
 
 Resultado esperado:
 
-- listado exclusivo de sus pedidos
+- listado exclusivo de pedidos del usuario actual
 
 Errores relevantes:
 
@@ -391,26 +542,31 @@ Requerimientos relacionados:
 - RF-016
 - RNF-002
 
-### 6.4 Carga inicial desde `.json`
+### 6.5 Bootstrap inicial desde JSON
 
-1. el sistema lee los archivos `.json` definidos para bootstrap
-2. transforma los datos a la estructura esperada
-3. inserta o inicializa productos en persistencia
-4. deja disponible el catalogo base para la aplicacion
+```mermaid
+sequenceDiagram
+    participant JSON as products.seed.json
+    participant SCRIPT as seed-products.ts
+    participant ADMIN as supabase-admin
+    participant DB as Supabase PostgreSQL
 
-Disparador:
-
-- proceso de arranque o inicializacion del catalogo
+    JSON->>SCRIPT: lee productos semilla
+    SCRIPT->>SCRIPT: valida con Zod
+    SCRIPT->>ADMIN: crea cliente admin
+    ADMIN->>DB: upsert sobre products
+    DB-->>SCRIPT: resultado
+```
 
 Resultado esperado:
 
-- productos cargados correctamente para la primera version
+- catalogo inicial disponible en la tabla `products`
 
 Errores relevantes:
 
-- archivo inexistente
-- formato invalido
-- fallo durante la carga en persistencia
+- archivo invalido
+- error de validacion
+- fallo de escritura en DB
 
 Requerimientos relacionados:
 
@@ -418,45 +574,55 @@ Requerimientos relacionados:
 
 ## 7. Vista de despliegue
 
-### 7.1 Entorno minimo
+### 7.1 Arquitectura de despliegue
 
-- frontend y backend preparados para desplegarse como una unica aplicacion Next.js en Vercel
-- Supabase como proveedor gestionado de autenticacion y base de datos
-- configuracion por variables de entorno para claves y conexion con Supabase
+```mermaid
+flowchart LR
+    Browser[Browser]
+    Vercel[Vercel<br/>Next.js UI + API]
+    Auth[Supabase Auth]
+    DB[Supabase PostgreSQL]
+    Seed[Seed script local]
 
-Requerimientos relacionados:
+    Browser <--> Vercel
+    Vercel <--> Auth
+    Vercel <--> DB
+    Seed --> DB
+```
 
-- RF-019
-- RNF-010
+### 7.2 Nodos y responsabilidades
 
-### 7.2 Nodos
-
-- cliente web
-- aplicacion Next.js desplegada en Vercel
-- base de datos PostgreSQL en Supabase
-- servicio de autenticacion Supabase Auth
+| Nodo | Responsabilidad |
+| --- | --- |
+| Browser | ejecutar UI, mantener carrito en `localStorage` y consumir la API |
+| Vercel | alojar paginas, componentes del App Router y endpoints |
+| Supabase Auth | gestionar magic link, sesiones e identidad |
+| Supabase PostgreSQL | persistir productos, pedidos, lineas y stock |
+| Seed script | inicializar catalogo desde `.json` |
 
 ### 7.3 Mapeo de bloques a infraestructura
 
 | Bloque | Destino |
 | --- | --- |
-| UI/App | Vercel |
-| Endpoints Next.js | Vercel |
+| Frontend Next.js | Vercel |
+| Endpoints App Router | Vercel |
 | Auth | Supabase Auth |
 | Productos, pedidos y stock | Supabase PostgreSQL |
-| Bootstrap desde `.json` | recurso interno del repositorio o proceso de inicializacion |
+| Carrito temporal | Browser `localStorage` |
+| Bootstrap desde `.json` | script operativo del repositorio |
 
 ### 7.4 Entornos
 
 | Entorno | Proposito |
 | --- | --- |
-| Local | desarrollo e integracion diaria |
+| Local | desarrollo, demo mode y pruebas de integracion |
 | Produccion | aplicacion publicada en Vercel conectada a Supabase |
 
 ### 7.5 Consideraciones operativas
 
-- Vercel aloja la interfaz web y los endpoints de Next.js
+- Vercel aloja la interfaz y los endpoints del sistema
 - Supabase aloja autenticacion y base de datos
+- `localStorage` solo se usa para estado temporal del carrito
 - el despliegue requiere variables de entorno para URL y claves de Supabase
 
 ## 8. Conceptos transversales
@@ -666,7 +832,21 @@ Estado actual:
 | snapshots visuales con mantenimiento | ruido en cambios UI | revisar cambios visuales intencionales con disciplina | abierto |
 | escalado x100 fuera del alcance base | capacidad limitada ante crecimiento | tratarlo como fase posterior con cache, replicas y observabilidad | aceptado |
 
-## 12. Glosario
+## 12. Evolucion futura de arquitectura
+
+La arquitectura actual prioriza una entrega vertical simple, operativa y desplegable. Aun asi, el sistema deja abierta una evolucion posterior hacia capacidades mas avanzadas una vez quede cerrado el flujo real de compra.
+
+Direccion de evolucion deseada:
+
+- procesamiento asincrono para pedidos, stock y notificaciones mediante colas o workers
+- eventos de dominio como `OrderCreated`, `StockUpdated` o `PaymentConfirmed`
+- modularizacion progresiva de dominios como catalogo, pedidos y usuarios
+- observabilidad avanzada con logs estructurados y trazas
+- integraciones futuras con servicios externos, analytics o automatizaciones
+
+Estas capacidades no forman parte del alcance actual ni del siguiente desarrollo prioritario, pero sirven como guia para evolucionar el sistema sin romper la base existente.
+
+## 13. Glosario
 
 - catalogo: conjunto de productos disponibles para compra
 - carrito: seleccion temporal de productos en cliente

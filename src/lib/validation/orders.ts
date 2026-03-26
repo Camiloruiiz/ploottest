@@ -32,3 +32,20 @@ export const createOrderRequestSchema = z.object({
 export const orderListResponseSchema = z.object({
   items: z.array(orderSchema),
 });
+
+const checkoutRpcSuccessSchema = z.object({
+  ok: z.literal(true),
+  order: orderSchema,
+});
+
+const checkoutRpcErrorSchema = z.object({
+  ok: z.literal(false),
+  error_code: z.string().min(1),
+  error_message: z.string().min(1),
+  error_detail: z.unknown().nullable().optional(),
+});
+
+export const checkoutRpcResponseSchema = z.discriminatedUnion("ok", [
+  checkoutRpcSuccessSchema,
+  checkoutRpcErrorSchema,
+]);
