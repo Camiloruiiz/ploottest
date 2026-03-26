@@ -71,3 +71,15 @@ Si el volumen de uso creciera de forma significativa, la solucion debe poder evo
 - observabilidad con logs y trazas
 - separacion progresiva de responsabilidades
 - CDN para assets
+
+## RNF-016 Estrategia de testing
+
+La solucion debe contar con una estrategia de testing automatizada basada en unit tests, pruebas E2E y comparaciones visuales.
+
+## RNF-017 Cobertura de flujos criticos
+
+Los flujos criticos del sistema deben poder validarse mediante pruebas automatizadas antes del despliegue.
+
+## RNF-018 Regresion visual controlada
+
+La interfaz debe poder validarse mediante snapshots visuales para detectar cambios no intencionales en componentes y pantallas clave.

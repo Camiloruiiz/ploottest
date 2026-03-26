@@ -1,0 +1,23 @@
+[
+  {
+    "id": "6df858c8-fccf-43dc-9d2f-08d4d5bf5f00",
+    "name": "Atlas Trail Jacket",
+    "description": "Water-resistant outer layer for weekend hikes.",
+    "price_cents": 12900,
+    "stock": 18
+  },
+  {
+    "id": "b0f280b8-1515-4d8d-b91b-171dd6612872",
+    "name": "Mercury Field Pack",
+    "description": "Compact daypack with structured internal pockets.",
+    "price_cents": 9400,
+    "stock": 27
+  },
+  {
+    "id": "8678718a-a245-4f86-a38d-4360ad631d83",
+    "name": "Signal Bottle",
+    "description": "Insulated steel bottle designed for all-day carry.",
+    "price_cents": 3200,
+    "stock": 41
+  }
+]
