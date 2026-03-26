@@ -1,6 +1,6 @@
 # PlootTest
 
-PlootTest es una aplicacion e-commerce construida con `Next.js`, `React`, `Supabase`, `Zod`, `React Query` y `Playwright`. El proyecto ya cuenta con una capa funcional operativa para catalogo, carrito, autenticacion, checkout y consulta de pedidos, con soporte tanto para modo demo como para integracion real con Supabase.
+PlootTest es ahora un monorepo ligero con `pnpm` y `Turborepo`. La app actual vive en `apps/web` y sigue ofreciendo catalogo, carrito, autenticacion, checkout y consulta de pedidos, con soporte tanto para modo demo como para integracion real con Supabase.
 
 Documentos principales:
 
@@ -14,8 +14,8 @@ Documentos principales:
 
 El sistema se organiza en estos bloques:
 
-- `Frontend Next.js`: storefront, carrito, auth y pedidos
-- `Backend Next.js`: App Router y endpoints `/api/v1`
+- `apps/web`: storefront, carrito, auth, pedidos y API Next.js
+- `packages/config-*`: configuracion compartida de TypeScript y ESLint
 - `Supabase Auth`: magic link y sesiones
 - `Supabase PostgreSQL`: productos, pedidos, lineas y stock
 - `localStorage`: persistencia temporal del carrito
@@ -56,7 +56,9 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    App[app]
+    Monorepo[monorepo]
+    App[apps/web]
+    Config[packages/config-*]
     Providers[providers]
     Store[components/store]
     Api[app/api/v1]
@@ -65,6 +67,8 @@ flowchart TB
     Validation[lib/validation]
     Demo[modules/store/demo-db]
 
+    Monorepo --> App
+    Monorepo --> Config
     App --> Providers
     Providers --> Store
     Store --> Api
@@ -115,7 +119,7 @@ sequenceDiagram
 
 ### Despliegue
 
-El sistema se despliega como una unica aplicacion Next.js en `Vercel`, conectada a `Supabase` para autenticacion y persistencia.
+El sistema se sigue desplegando como una unica aplicacion Next.js en `Vercel`, pero su codigo ahora se organiza en un monorepo con `apps/web` como app principal.
 
 ```mermaid
 flowchart LR
@@ -139,6 +143,7 @@ Ya implementado:
 - checkout en modo demo y en modo Supabase
 - consulta de pedidos
 - testing base con `Vitest`, `Playwright` y snapshots visuales
+- migracion del repositorio a monorepo con `pnpm` y `Turborepo`
 
 Siguiente enfoque:
 

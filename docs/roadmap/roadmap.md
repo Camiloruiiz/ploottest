@@ -111,7 +111,22 @@ Objetivo:
 
 Con esta feature el proyecto dejara de depender solo de cobertura demo para validar los recorridos criticos.
 
-## Fase 6. Escalado x100
+## Fase 6. Monorepo y tooling compartido
+
+Estado: completada
+
+- migracion del repositorio a monorepo con `pnpm`
+- adopcion de `Turborepo` para orquestar tareas desde la raiz
+- movimiento de la aplicacion principal a `apps/web`
+- extraccion inicial de configuracion compartida para `TypeScript` y `ESLint`
+
+Features relacionadas:
+
+- `features/MVP/monorepo-pnpm.feature`
+- `features/MVP/turborepo-pipeline.feature`
+- `features/MVP/workspace-config.feature`
+
+## Fase 7. Escalado x100
 
 Estado: posterior
 

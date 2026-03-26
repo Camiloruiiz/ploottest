@@ -2,51 +2,24 @@
   "name": "ploottest",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.30.1",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test",
-    "test:visual": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/visual --update-snapshots",
-    "test:ui": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z npm run build && PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z playwright test tests/e2e/app-home.spec.ts --update-snapshots",
-    "seed:products": "tsx scripts/seed-products.ts"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.57.4",
-    "@tanstack/react-query": "^5.90.5",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.544.0",
-    "next": "^15.5.3",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwind-merge": "^3.3.1",
-    "zod": "^4.1.5"
+    "dev": "turbo run dev --filter=@ploottest/web",
+    "build": "turbo run build --filter=@ploottest/web",
+    "start": "turbo run start --filter=@ploottest/web",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:watch": "pnpm --dir apps/web test:watch",
+    "test:e2e": "turbo run test:e2e --filter=@ploottest/web",
+    "test:visual": "turbo run test:visual --filter=@ploottest/web",
+    "test:ui": "turbo run test:ui --filter=@ploottest/web",
+    "seed:products": "pnpm --dir apps/web seed:products"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.3.0",
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.9",
-    "@vitejs/plugin-react": "^5.0.2",
-    "eslint": "^9.34.0",
-    "eslint-config-next": "^15.5.3",
-    "jsdom": "^26.1.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "turbo": "^2.5.0"
   }
 }

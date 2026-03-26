@@ -16,39 +16,39 @@ help:
 	@echo "  make check       Run lint, typecheck and unit tests"
 
 install:
-	npm install
+	pnpm install
 
 dev:
-	npm run dev
+	pnpm dev
 
 build:
-	npm run build
+	pnpm build
 
 start:
-	npm run start
+	pnpm start
 
 lint:
-	npm run lint
+	pnpm lint
 
 typecheck:
-	npm run typecheck
+	pnpm typecheck
 
 test:
-	npm test
+	pnpm test
 
 test-watch:
-	npm run test:watch
+	pnpm test:watch
 
 test-e2e:
-	npm run test:e2e
+	pnpm test:e2e
 
 test-ui:
-	npm run test:ui
+	pnpm test:ui
 
 seed:
-	npm run seed:products
+	pnpm seed:products
 
 check:
-	npm run lint
-	npm run typecheck
-	npm test
+	pnpm lint
+	pnpm typecheck
+	pnpm test
