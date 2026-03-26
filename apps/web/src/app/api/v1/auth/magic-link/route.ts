@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ApiError, apiErrorResponse, ok } from "@/lib/api/http";
-import { getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
+import { getCanonicalSiteUrl, getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { magicLinkRequestSchema } from "@/lib/validation/auth";
 import { encodeDemoSession, getDemoSessionCookieConfig } from "@/modules/auth/session";
 import { createMagicLink } from "@/modules/store/demo-db";
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         flowType: "pkce",
       },
     });
-    const callbackUrl = new URL("/auth/callback", request.url);
+    const callbackUrl = new URL("/auth/callback", getCanonicalSiteUrl(request.url));
     callbackUrl.searchParams.set("next", parsed.data.next);
     const { error } = await supabase.auth.signInWithOtp({
       email: parsed.data.email,
