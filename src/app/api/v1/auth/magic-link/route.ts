@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ApiError, apiErrorResponse, ok } from "@/lib/api/http";
-import { getPublicEnv, isSupabaseConfigured } from "@/lib/config/env";
+import { getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { magicLinkRequestSchema } from "@/lib/validation/auth";
+import { getDemoSessionCookieConfig } from "@/modules/auth/session";
 import { createMagicLink } from "@/modules/store/demo-db";
 
 export async function POST(request: Request) {
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (isSupabaseConfigured()) {
+  if (!shouldUseDemoMode() && isSupabaseConfigured()) {
     const env = getPublicEnv();
     const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     const callbackUrl = new URL("/auth/callback", request.url);
@@ -43,13 +44,18 @@ export async function POST(request: Request) {
   }
 
   const token = createMagicLink(parsed.data.email, parsed.data.next);
-  const previewUrl = new URL(`/auth/callback?token=${token}`, request.url);
+  const previewUrl = new URL(parsed.data.next, request.url);
+  previewUrl.searchParams.set("demoToken", token);
 
-  return NextResponse.json(
+  const response = NextResponse.json(
     ok({
       mode: "demo",
       message: "Demo magic link generated for local development.",
       previewUrl: previewUrl.toString(),
     }),
   );
+  const cookie = getDemoSessionCookieConfig(parsed.data.email);
+  response.cookies.set(cookie.name, cookie.value, cookie.options);
+
+  return response;
 }

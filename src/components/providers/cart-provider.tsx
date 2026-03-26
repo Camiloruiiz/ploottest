@@ -51,17 +51,19 @@ function reducer(state: CartState, action: CartAction): CartState {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialCartState);
+  const [state, dispatch] = useReducer(reducer, initialCartState, () => {
+    if (typeof window === "undefined") {
+      return initialCartState;
+    }
 
-  useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      dispatch({ type: "hydrate", payload: JSON.parse(raw) as CartState });
+      return raw ? (JSON.parse(raw) as CartState) : initialCartState;
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
+      return initialCartState;
     }
-  }, []);
+  });
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));

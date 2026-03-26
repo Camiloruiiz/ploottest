@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { getPublicEnv, isSupabaseConfigured } from "@/lib/config/env";
-import { setDemoSession } from "@/modules/auth/session";
+import { getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
+import { getDemoSessionCookieConfig } from "@/modules/auth/session";
 import { consumeMagicLink } from "@/modules/store/demo-db";
 
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const next = url.searchParams.get("next") ?? "/cart";
   const code = url.searchParams.get("code");
 
-  if (code && isSupabaseConfigured()) {
+  if (code && !shouldUseDemoMode() && isSupabaseConfigured()) {
     const env = getPublicEnv();
     const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     await supabase.auth.exchangeCodeForSession(code);
@@ -27,6 +27,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/auth?next=${encodeURIComponent(next)}`, url));
   }
 
-  await setDemoSession(payload.email);
-  return NextResponse.redirect(new URL(payload.next || next, url));
+  const response = NextResponse.redirect(new URL(payload.next || next, url));
+  const cookie = getDemoSessionCookieConfig(payload.email);
+  response.cookies.set(cookie.name, cookie.value, cookie.options);
+  return response;
 }

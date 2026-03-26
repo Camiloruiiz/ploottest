@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { isSupabaseConfigured } from "@/lib/config/env";
+import { isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { createRouteHandlerClient } from "@/lib/db/supabase-server";
 import { deriveUserId } from "@/modules/store/demo-db";
 
@@ -13,7 +13,7 @@ export type SessionUser = {
   mode: "demo" | "supabase";
 };
 
-function encodeSession(email: string) {
+export function encodeDemoSession(email: string) {
   return Buffer.from(JSON.stringify({ email }), "utf8").toString("base64url");
 }
 
@@ -28,7 +28,7 @@ function decodeSession(value: string) {
 }
 
 export async function getCurrentUser() {
-  if (isSupabaseConfigured()) {
+  if (!shouldUseDemoMode() && isSupabaseConfigured()) {
     try {
       const supabase = await createRouteHandlerClient();
       const {
@@ -79,7 +79,7 @@ export async function requireCurrentUser(next = "/") {
 
 export async function setDemoSession(email: string) {
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, encodeSession(email), {
+  cookieStore.set(SESSION_COOKIE, encodeDemoSession(email), {
     httpOnly: true,
     sameSite: "lax",
     secure: false,
@@ -88,8 +88,22 @@ export async function setDemoSession(email: string) {
   });
 }
 
+export function getDemoSessionCookieConfig(email: string) {
+  return {
+    name: SESSION_COOKIE,
+    value: encodeDemoSession(email),
+    options: {
+      httpOnly: true,
+      sameSite: "lax" as const,
+      secure: false,
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    },
+  };
+}
+
 export async function clearSession() {
-  if (isSupabaseConfigured()) {
+  if (!shouldUseDemoMode() && isSupabaseConfigured()) {
     try {
       const supabase = await createRouteHandlerClient();
       await supabase.auth.signOut();

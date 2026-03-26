@@ -179,6 +179,7 @@ export function Storefront({
                     style={{ width: "100%", marginTop: 18 }}
                     disabled={product.stock === 0}
                     aria-label={`Add ${product.name} to cart`}
+                    data-testid={`add-to-cart-${product.id}`}
                     onClick={() =>
                       addItem({
                         product_id: product.id,

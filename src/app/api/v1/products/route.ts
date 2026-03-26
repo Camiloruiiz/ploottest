@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApiError, apiErrorResponse, ok } from "@/lib/api/http";
-import { isSupabaseConfigured } from "@/lib/config/env";
+import { isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { productListResponseSchema } from "@/lib/validation/products";
 import { createRouteHandlerClient } from "@/lib/db/supabase-server";
 import { parseProductQuery } from "@/modules/products/query";
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = parseProductQuery(url.searchParams);
 
-  if (!isSupabaseConfigured()) {
+  if (shouldUseDemoMode() || !isSupabaseConfigured()) {
     const payload = productListResponseSchema.parse(filterProducts(getDemoDb().products, query));
     return NextResponse.json(ok(payload));
   }

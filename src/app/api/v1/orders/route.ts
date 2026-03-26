@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { ApiError, apiErrorResponse, ok } from "@/lib/api/http";
-import { isSupabaseConfigured } from "@/lib/config/env";
+import { isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { createRouteHandlerClient } from "@/lib/db/supabase-server";
 import { createOrderRequestSchema, orderListResponseSchema } from "@/lib/validation/orders";
 import { getCurrentUser } from "@/modules/auth/session";
 import { createOrderForUser, listOrdersForUser } from "@/modules/orders/service";
 
 export async function GET() {
-  if (!isSupabaseConfigured()) {
+  if (shouldUseDemoMode() || !isSupabaseConfigured()) {
     const user = await getCurrentUser();
 
     if (!user) {
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isSupabaseConfigured()) {
+  if (shouldUseDemoMode() || !isSupabaseConfigured()) {
     const user = await getCurrentUser();
 
     if (!user) {

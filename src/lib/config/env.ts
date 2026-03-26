@@ -29,6 +29,10 @@ export function isSupabaseConfigured() {
   return Object.values(envStatus).every(Boolean);
 }
 
+export function shouldUseDemoMode() {
+  return process.env.PLOOTTEST_FORCE_DEMO === "1" || !isSupabaseConfigured();
+}
+
 export function getRequiredEnv() {
   if (!parsedEnv.success) {
     throw new Error(
