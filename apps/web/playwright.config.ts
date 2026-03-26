@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 
 const port = Number(process.env.PORT ?? 3000);
 const forceDemo = process.env.PLOOTTEST_FORCE_DEMO === "1";
@@ -22,7 +22,13 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        browserName: "chromium",
+        viewport: {
+          width: 390,
+          height: 844,
+        },
+      },
     },
   ],
 });
