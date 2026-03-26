@@ -23,6 +23,8 @@ Se prioriza una primera version centrada en:
 - autenticacion basica
 - consulta de pedidos propios
 
+El primer entregable implementado se ha centrado en la plataforma base y deja estos flujos funcionales como siguiente capa de desarrollo.
+
 Se dejan fuera de la primera version:
 
 - pagos reales

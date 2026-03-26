@@ -25,6 +25,10 @@ export const envStatus = {
   SUPABASE_SERVICE_ROLE_KEY: Boolean(rawEnv.SUPABASE_SERVICE_ROLE_KEY),
 };
 
+export function isSupabaseConfigured() {
+  return Object.values(envStatus).every(Boolean);
+}
+
 export function getRequiredEnv() {
   if (!parsedEnv.success) {
     throw new Error(

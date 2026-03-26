@@ -1,5 +1,10 @@
 # Requerimientos Funcionales
 
+Estado actual:
+
+- la base tecnica del sistema ya esta implementada
+- los requerimientos de negocio siguientes representan el alcance funcional a completar sobre esa base
+
 ## RF-001 Carga inicial del catalogo
 
 El sistema debe permitir una carga inicial de productos desde archivos `.json`.

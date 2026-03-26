@@ -4,7 +4,7 @@
 
 ### 1.1 Proposito
 
-Este documento describe la arquitectura de una primera version minimamente funcional del sistema. El objetivo es entregar una aplicacion operativa, desplegada en Vercel, con catalogo, carrito, checkout y consulta de pedidos.
+Este documento describe la arquitectura del estado actual del sistema y su siguiente fase funcional. Hoy el proyecto ya cuenta con una base tecnica ejecutable: app Next.js operativa, integracion con Supabase, bootstrap desde `.json`, contratos validados y testing base. La siguiente fase se centra en completar el dominio funcional de catalogo, carrito, checkout y pedidos.
 
 Decision de velocidad:
 
@@ -13,16 +13,26 @@ Decision de velocidad:
 
 ### 1.2 Alcance
 
-El sistema cubre:
+Estado actual implementado:
+
+- app Next.js operativa con pantalla base
+- validacion de variables de entorno
+- clientes de Supabase para navegador, servidor y admin
+- carga inicial de productos desde archivos `.json`
+- esquema SQL base para productos, pedidos y lineas
+- contratos Zod compartidos
+- helpers HTTP compartidos
+- testing base con Vitest, Playwright y snapshot visual
+
+Siguiente alcance funcional:
 
 - catalogo de productos
-- carga inicial de productos desde archivos `.json`
 - carrito persistido en cliente
 - checkout con validacion de stock
 - autenticacion de usuarios
 - consulta de pedidos propios
 - API minima para productos y pedidos
-- despliegue operativo en Vercel
+- despliegue operativo en Vercel si no se ha ejecutado ya en entorno objetivo
 
 Requerimientos relacionados:
 
@@ -145,7 +155,7 @@ Requerimientos relacionados:
 
 ### 4.1 Enfoque general
 
-Se adopta un monolito simple implementado con Next.js. Esta eleccion prioriza velocidad de construccion, simplicidad operativa y facilidad de despliegue en Vercel.
+Se adopta un monolito simple implementado con Next.js. Esta eleccion ha permitido construir primero una plataforma ejecutable y deja el dominio funcional preparado para completarse por fases.
 
 ### 4.2 Stack tecnologico
 
@@ -199,12 +209,19 @@ Tabla de decisiones:
 
 ### 4.4 Estrategia de desarrollo
 
-La primera version se construye en cuatro pasos:
+Estado actual:
 
-1. carga inicial desde `.json` e integracion con Supabase
-2. API minima de productos y pedidos
-3. catalogo, carrito en `localStorage` y login
-4. checkout, pedidos y despliegue en Vercel
+- base del proyecto e integracion con Supabase completadas
+- bootstrap de productos desde `.json` disponible
+- validaciones y testing base disponibles
+- estructura de dominios preparada, pero no completada funcionalmente
+
+Siguiente fase:
+
+1. implementar catalogo real sobre la base actual
+2. implementar carrito en `localStorage`
+3. implementar login y area de pedidos
+4. implementar checkout y cierre operativo de despliegue en Vercel
 
 Todo lo demas queda como evolucion posterior.
 
@@ -225,12 +242,12 @@ Whitebox del sistema:
 
 | Bloque | Responsabilidad principal |
 | --- | --- |
-| UI/App | renderizado de vistas, navegacion y acciones de usuario |
-| Catalogo | consulta y presentacion de productos |
-| Carrito | gestion temporal del estado de compra |
-| Checkout/Pedidos | validacion de stock y creacion de pedidos |
-| Auth | sesion y control de acceso |
-| Persistencia | acceso a Supabase y carga inicial |
+| UI/App | implementado como base operativa y pantalla de estado |
+| Catalogo | preparado estructuralmente, pendiente de implementacion funcional |
+| Carrito | preparado estructuralmente, pendiente de implementacion funcional |
+| Checkout/Pedidos | preparado estructuralmente, pendiente de implementacion funcional |
+| Auth | preparado estructuralmente, pendiente de implementacion funcional |
+| Persistencia | implementado mediante Supabase y carga inicial |
 
 ### 5.2 Descomposicion interna propuesta
 
@@ -255,9 +272,9 @@ Whitebox de la aplicacion:
 | Bloque interno | Responsabilidad |
 | --- | --- |
 | `app` | rutas, paginas y endpoints |
-| `modules` | logica por dominio |
-| `lib` | integraciones, validacion y utilidades compartidas |
-| `components` | piezas reutilizables de UI |
+| `modules` | dominios preparados para la siguiente fase funcional |
+| `lib` | integraciones, validacion y utilidades compartidas ya disponibles |
+| `components` | piezas reutilizables de UI y pantalla base implementada |
 | `hooks` | comportamiento reutilizable en cliente |
 
 ### 5.3 Dominio critico: pedidos
@@ -399,7 +416,7 @@ Requerimientos relacionados:
 
 ### 7.1 Entorno minimo
 
-- frontend y backend desplegados como una unica aplicacion Next.js en Vercel
+- frontend y backend preparados para desplegarse como una unica aplicacion Next.js en Vercel
 - Supabase como proveedor gestionado de autenticacion y base de datos
 - configuracion por variables de entorno para claves y conexion con Supabase
 
@@ -627,6 +644,12 @@ Escenarios de calidad:
 
 - una regression en checkout debe ser detectable por tests automatizados
 - un cambio visual no intencional en catalogo, carrito o checkout debe ser detectable por snapshots
+
+Estado actual:
+
+- unit tests base implementados
+- E2E base implementado sobre la home
+- snapshot visual base implementado sobre la home
 
 ## 11. Riesgos y deuda tecnica
 

@@ -1,5 +1,10 @@
 # Requerimientos No Funcionales
 
+Estado actual:
+
+- parte de estos requerimientos ya tienen implementacion inicial, especialmente en validacion, testing base y preparacion del despliegue
+- el resto sigue actuando como criterio de calidad para cerrar la siguiente fase funcional
+
 ## RNF-001 Consistencia de datos
 
 La creacion de pedidos no debe producir decrementos de stock inconsistentes ni pedidos confirmados sin disponibilidad valida.

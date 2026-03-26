@@ -8,3 +8,5 @@ coverage
 .env.test
 *.tsbuildinfo
 docs/roadmap/*
+.codex
+features/*
