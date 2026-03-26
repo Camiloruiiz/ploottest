@@ -7,6 +7,4 @@ coverage
 .env.local
 .env.test
 *.tsbuildinfo
-docs/roadmap/*
 .codex
-features/*
