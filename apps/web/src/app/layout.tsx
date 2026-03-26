@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthHashHandler } from "@/components/providers/auth-hash-handler";
 import { QueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
 
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <AuthHashHandler />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

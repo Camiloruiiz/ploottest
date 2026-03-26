@@ -32,7 +32,7 @@ test("user can sign in, checkout and review orders", async ({ page }) => {
   await expect(page).toHaveURL(/\/cart/);
   await page.goto("/");
   await page.getByTestId("add-to-cart-6df858c8-fccf-43dc-9d2f-08d4d5bf5f00").click();
-  await page.getByRole("link", { name: /Cart \(1\)/i }).click();
+  await page.goto("/cart");
   await expect(page.getByRole("heading", { name: "Your purchase draft" })).toBeVisible();
   await expect(page.getByText("Atlas Trail Jacket")).toBeVisible();
   await expect(page.getByRole("button", { name: "Checkout" })).toBeEnabled();

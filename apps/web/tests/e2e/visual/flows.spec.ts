@@ -59,7 +59,7 @@ test("catalog error state", async ({ page }) => {
   );
 
   await page.goto("/");
-  await expect(page.getByText("Catalog is currently unavailable.")).toBeVisible();
+  await expect(page.getByText("Products exploded.")).toBeVisible();
   await expect(page).toHaveScreenshot("catalog-error.png", { fullPage: true });
 });
 

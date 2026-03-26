@@ -19,5 +19,47 @@
     "description": "Insulated steel bottle designed for all-day carry.",
     "price_cents": 3200,
     "stock": 41
+  },
+  {
+    "id": "7d880843-f315-4b45-a2d3-3ef53e65df29",
+    "name": "Nova Camp Lantern",
+    "description": "Rechargeable lantern with a warm glow for late setups.",
+    "price_cents": 5800,
+    "stock": 22
+  },
+  {
+    "id": "f488a5c2-5f14-4acb-9367-6da2f5e16c57",
+    "name": "Comet Trail Cap",
+    "description": "Lightweight ripstop cap that dries fast on hot routes.",
+    "price_cents": 2600,
+    "stock": 34
+  },
+  {
+    "id": "3a0f538d-8923-44a8-95ec-91e7507bb700",
+    "name": "Orbit Utility Pouch",
+    "description": "Clip-on pouch for cables, cards, and small field tools.",
+    "price_cents": 2100,
+    "stock": 16
+  },
+  {
+    "id": "7f2ae7a7-5c37-43e8-b2bd-55f0e45f0c5b",
+    "name": "Drift Wool Blanket",
+    "description": "Soft merino blend layer for cold camp mornings.",
+    "price_cents": 7600,
+    "stock": 9
+  },
+  {
+    "id": "54ef6f30-b56f-4f2d-bcf0-b4816f20f4ef",
+    "name": "Transit Sling",
+    "description": "Crossbody sling sized for city walks and short transfers.",
+    "price_cents": 6900,
+    "stock": 3
+  },
+  {
+    "id": "5df3a3a9-2c0d-4b0b-9731-f6cd335fa5dd",
+    "name": "Summit Stove Kit",
+    "description": "Compact cooking set for two with folding burner support.",
+    "price_cents": 14900,
+    "stock": 0
   }
 ]

@@ -10,10 +10,10 @@ import { getDemoDb } from "@/modules/store/demo-db";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = parseProductQuery(url.searchParams);
+  const fallbackPayload = productListResponseSchema.parse(filterProducts(getDemoDb().products, query));
 
   if (shouldUseDemoMode() || !isSupabaseConfigured()) {
-    const payload = productListResponseSchema.parse(filterProducts(getDemoDb().products, query));
-    return NextResponse.json(ok(payload));
+    return NextResponse.json(ok(fallbackPayload));
   }
 
   const supabase = await createRouteHandlerClient();
@@ -54,6 +54,15 @@ export async function GET(request: Request) {
   const { data, error, count } = await queryBuilder.range(from, to);
 
   if (error) {
+    if (process.env.NODE_ENV !== "production") {
+      return NextResponse.json(ok(fallbackPayload), {
+        headers: {
+          "x-ploottest-products-source": "demo-fallback",
+          "x-ploottest-products-error": error.code ?? "unknown_error",
+        },
+      });
+    }
+
     return NextResponse.json(
       apiErrorResponse(new ApiError("products_fetch_failed", error.message, 500)),
       { status: 500 },

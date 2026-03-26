@@ -25,6 +25,10 @@ type ProductsResponse = {
       totalPages: number;
     };
   };
+  error?: {
+    code?: string;
+    message?: string;
+  };
 };
 
 export function Storefront({
@@ -78,7 +82,7 @@ export function Storefront({
       const response = await fetch(`/api/v1/products${queryString ? `?${queryString}` : ""}`);
       const payload = (await response.json()) as ProductsResponse;
       if (!response.ok || !payload.ok) {
-        throw new Error("Unable to load products.");
+        throw new Error(payload.error?.message ?? "Unable to load products.");
       }
       return payload.data;
     },
@@ -151,7 +155,11 @@ export function Storefront({
           </Card>
 
           {productsQuery.isLoading ? <div className="status-block">Loading catalog...</div> : null}
-          {productsQuery.isError ? <div className="status-block">Catalog is currently unavailable.</div> : null}
+          {productsQuery.isError ? (
+            <div className="status-block">
+              {productsQuery.error instanceof Error ? productsQuery.error.message : "Catalog is currently unavailable."}
+            </div>
+          ) : null}
 
           <div className="product-grid">
             {products.map((product) => (

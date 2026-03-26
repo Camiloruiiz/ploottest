@@ -19,7 +19,11 @@ export async function POST(request: Request) {
 
   if (!shouldUseDemoMode() && isSupabaseConfigured()) {
     const env = getPublicEnv();
-    const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+      auth: {
+        flowType: "pkce",
+      },
+    });
     const callbackUrl = new URL("/auth/callback", request.url);
     callbackUrl.searchParams.set("next", parsed.data.next);
     const { error } = await supabase.auth.signInWithOtp({
@@ -38,7 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       ok({
         mode: "supabase",
-        message: "Magic link sent. Check your inbox.",
+        message: "Magic link sent. Check your inbox. If the browser lands on the root URL, it will complete the session automatically.",
       }),
     );
   }
