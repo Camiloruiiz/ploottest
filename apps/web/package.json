@@ -14,9 +14,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/auth tests/e2e/cart tests/e2e/catalog",
-    "test:visual": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
-    "test:ui": "PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
+    "test:e2e": "pnpm run build && PORT=3100 PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/auth tests/e2e/cart tests/e2e/catalog",
+    "test:visual": "pnpm run build && PORT=3101 PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
+    "test:ui": "pnpm run build && PORT=3101 PLOOTTEST_FORCE_DEMO=1 PLOOTTEST_FIXED_NOW=2025-01-07T12:00:00.000Z PLOOTTEST_SERIAL=1 playwright test tests/e2e/visual --update-snapshots",
     "seed:products": "tsx scripts/seed-products.ts"
   },
   "dependencies": {

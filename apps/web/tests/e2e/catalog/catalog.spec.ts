@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test("catalog supports search and sort", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Collect what you want/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Catalog" })).toBeVisible();
   await searchCatalog(page, "Pack");
   await expect(page.getByText("Mercury Field Pack")).toBeVisible();
   await page.locator("select").nth(1).selectOption("price_desc");

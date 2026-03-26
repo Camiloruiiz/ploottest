@@ -5,7 +5,7 @@ export const MERCURY_ID = "b0f280b8-1515-4d8d-b91b-171dd6612872";
 
 export async function searchCatalog(page: Page, query: string) {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Collect what you want/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Catalog" })).toBeVisible();
   const responsePromise = page.waitForResponse((response) => {
     return response.url().includes("/api/v1/products") && response.ok();
   });

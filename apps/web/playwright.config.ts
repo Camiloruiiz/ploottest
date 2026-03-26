@@ -14,7 +14,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: `${forceDemo ? "PLOOTTEST_FORCE_DEMO=1 " : ""}pnpm exec next dev --hostname 127.0.0.1 --port ${port}`,
+    command: `${forceDemo ? "PLOOTTEST_FORCE_DEMO=1 " : ""}pnpm exec next start --hostname 127.0.0.1 --port ${port}`,
     url: `http://127.0.0.1:${port}`,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,

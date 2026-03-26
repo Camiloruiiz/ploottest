@@ -49,6 +49,7 @@ body {
   background:
     radial-gradient(circle at top, rgba(116, 131, 255, 0.09), transparent 30%),
     transparent;
+  padding: 0 12px 32px;
 }
 
 a {
@@ -78,16 +79,16 @@ select {
 }
 
 .shell {
-  width: min(1100px, calc(100vw - 32px));
+  width: min(390px, 100%);
   margin: 0 auto;
 }
 
 .topbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 26px 0 18px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0 14px;
 }
 
 .brand {
@@ -121,6 +122,7 @@ select {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .topnav a {
@@ -132,33 +134,13 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
   padding: 8px 10px 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: rgba(16, 21, 48, 0.9);
   backdrop-filter: blur(16px);
-}
-
-.hero {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  padding: 20px 0 10px;
-}
-
-.hero h1,
-.section-heading h1 {
-  margin: 0 0 10px;
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-  line-height: 0.94;
-  letter-spacing: -0.03em;
-}
-
-.lede {
-  max-width: 48ch;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.65;
+  width: 100%;
 }
 
 .eyebrow {
@@ -168,20 +150,6 @@ select {
   font-size: 0.68rem;
   color: var(--accent);
   font-weight: 700;
-}
-
-.hero-panel {
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-panel::before {
-  content: "";
-  position: absolute;
-  inset: -20% 35% auto -10%;
-  height: 220px;
-  background: radial-gradient(circle, rgba(147, 164, 255, 0.28), transparent 68%);
-  pointer-events: none;
 }
 
 .stat-number {
@@ -204,13 +172,13 @@ select {
 
 .catalog-shell {
   display: grid;
-  gap: 18px;
-  padding: 12px 0 72px;
+  gap: 14px;
+  padding: 8px 0 48px;
 }
 
 .controls-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(180px, 1fr));
+  grid-template-columns: 1fr;
   gap: 14px;
 }
 
@@ -231,7 +199,7 @@ select {
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -250,6 +218,8 @@ select {
 
 .product-meta {
   margin-top: 18px;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .surface-grid {
@@ -259,21 +229,29 @@ select {
 
 .pagination-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 16px;
 }
 
 .section-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.section-heading h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .cart-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr);
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -296,7 +274,7 @@ select {
 }
 
 .auth-card {
-  width: min(520px, 100%);
+  width: 100%;
 }
 
 .auth-form {
@@ -318,9 +296,10 @@ select {
 .order-card-heading,
 .cart-card-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .orbit-tag {
@@ -350,11 +329,6 @@ select {
 }
 
 @media (max-width: 880px) {
-  .cart-layout,
-  .controls-grid {
-    grid-template-columns: 1fr;
-  }
-
   .topbar,
   .section-heading,
   .pagination-row {

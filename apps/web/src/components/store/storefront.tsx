@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useDeferredValue, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -106,20 +105,6 @@ export function Storefront({
     <>
       <StoreHeader user={user} cartCount={itemCount} />
       <main className="shell">
-        <section className="hero">
-          <Card className="hero-panel">
-            <CardHeader>
-              <div className="orbit-tag">Dreamlike catalog</div>
-              <CardTitle>Collect what you want. Drift past the rest.</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="lede">
-                Search fast, sort quietly, and move straight from discovery to checkout.
-              </p>
-            </CardContent>
-          </Card>
-        </section>
-
         <section className="catalog-shell">
           <Card>
             <CardHeader>
