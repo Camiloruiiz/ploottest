@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { SessionUser } from "@/modules/auth/session";
 
@@ -13,9 +14,17 @@ export function StoreHeader({
   cartCount: number;
 }) {
   const router = useRouter();
+  const [demoEmail, setDemoEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDemoEmail(window.localStorage.getItem("ploottest_demo_user"));
+  }, []);
+
+  const effectiveEmail = user?.email ?? demoEmail;
 
   async function handleLogout() {
     await fetch("/api/v1/auth/logout", { method: "POST" });
+    window.localStorage.removeItem("ploottest_demo_user");
     router.refresh();
   }
 
@@ -33,10 +42,10 @@ export function StoreHeader({
         <nav className="topnav">
           <Link href="/">Catalog</Link>
           <Link href="/cart">Cart ({cartCount})</Link>
-          {user ? <Link href="/orders">Orders</Link> : null}
-          {user ? (
+          {effectiveEmail ? <Link href="/orders">Orders</Link> : null}
+          {effectiveEmail ? (
             <div className="user-chip">
-              <span>{user.email}</span>
+              <span>{effectiveEmail}</span>
               <Button variant="outline" onClick={handleLogout}>
                 Logout
               </Button>

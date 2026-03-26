@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/providers/cart-provider";
 import { StoreHeader } from "@/components/store/header";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,14 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
   const { state, itemCount, totalCents, removeItem, setQuantity, clear } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [demoEmail, setDemoEmail] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setDemoEmail(window.localStorage.getItem("ploottest_demo_user"));
+  }, []);
+
+  const effectiveEmail = user?.email ?? demoEmail;
 
   async function checkout() {
     setSubmitting(true);
@@ -24,6 +31,7 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(effectiveEmail ? { "x-demo-user": effectiveEmail } : {}),
       },
       body: JSON.stringify({
         items: state.items.map((item) => ({
@@ -115,7 +123,7 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
                   <strong>{formatCurrency(totalCents)}</strong>
                 </div>
                 {message ? <p className="error-text">{message}</p> : null}
-                {user ? (
+                {effectiveEmail ? (
                   <Button style={{ width: "100%", marginTop: 18 }} disabled={!itemCount || submitting} onClick={checkout}>
                     {submitting ? "Placing order..." : "Checkout now"}
                   </Button>

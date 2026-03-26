@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { StoreHeader } from "@/components/store/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatDate } from "@/lib/format";
@@ -26,12 +27,22 @@ type OrdersResponse = {
   };
 };
 
-export function OrdersScreen({ user }: { user: SessionUser }) {
+export function OrdersScreen({ user }: { user: SessionUser | null }) {
   const { itemCount } = useCart();
+  const [demoEmail, setDemoEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDemoEmail(window.localStorage.getItem("ploottest_demo_user"));
+  }, []);
+
+  const effectiveEmail = user?.email ?? demoEmail;
   const ordersQuery = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders", effectiveEmail],
+    enabled: Boolean(effectiveEmail),
     queryFn: async () => {
-      const response = await fetch("/api/v1/orders");
+      const response = await fetch("/api/v1/orders", {
+        headers: effectiveEmail ? { "x-demo-user": effectiveEmail } : {},
+      });
       const payload = (await response.json()) as OrdersResponse;
 
       if (!response.ok || !payload.ok) {
@@ -56,7 +67,8 @@ export function OrdersScreen({ user }: { user: SessionUser }) {
 
           {ordersQuery.isLoading ? <p>Loading orders...</p> : null}
           {ordersQuery.isError ? <p>Orders are currently unavailable.</p> : null}
-          {!ordersQuery.isLoading && !ordersQuery.data?.length ? <p>No orders yet.</p> : null}
+          {!effectiveEmail ? <p>Sign in to review your orders.</p> : null}
+          {!ordersQuery.isLoading && effectiveEmail && !ordersQuery.data?.length ? <p>No orders yet.</p> : null}
 
           <div className="order-list">
             {ordersQuery.data?.map((order) => (

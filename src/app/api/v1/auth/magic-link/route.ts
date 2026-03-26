@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { ApiError, apiErrorResponse, ok } from "@/lib/api/http";
 import { getPublicEnv, isSupabaseConfigured, shouldUseDemoMode } from "@/lib/config/env";
 import { magicLinkRequestSchema } from "@/lib/validation/auth";
-import { getDemoSessionCookieConfig } from "@/modules/auth/session";
+import { encodeDemoSession, getDemoSessionCookieConfig } from "@/modules/auth/session";
 import { createMagicLink } from "@/modules/store/demo-db";
 
 export async function POST(request: Request) {
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
       mode: "demo",
       message: "Demo magic link generated for local development.",
       previewUrl: previewUrl.toString(),
+      demoSessionValue: encodeDemoSession(parsed.data.email),
     }),
   );
   const cookie = getDemoSessionCookieConfig(parsed.data.email);

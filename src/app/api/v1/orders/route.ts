@@ -6,11 +6,13 @@ import { createOrderRequestSchema, orderListResponseSchema } from "@/lib/validat
 import { getCurrentUser } from "@/modules/auth/session";
 import { createOrderForUser, listOrdersForUser } from "@/modules/orders/service";
 
-export async function GET() {
+export async function GET(request: Request) {
   if (shouldUseDemoMode() || !isSupabaseConfigured()) {
     const user = await getCurrentUser();
+    const fallbackEmail = request.headers.get("x-demo-user");
+    const email = user?.email ?? fallbackEmail;
 
-    if (!user) {
+    if (!email) {
       return NextResponse.json(
         apiErrorResponse(new ApiError("auth_required", "Authentication is required.", 401)),
         { status: 401 },
@@ -18,7 +20,7 @@ export async function GET() {
     }
 
     const payload = orderListResponseSchema.parse({
-      items: listOrdersForUser(user.email),
+      items: listOrdersForUser(email),
     });
 
     return NextResponse.json(ok(payload));
@@ -66,8 +68,10 @@ export async function POST(request: Request) {
 
   if (shouldUseDemoMode() || !isSupabaseConfigured()) {
     const user = await getCurrentUser();
+    const fallbackEmail = request.headers.get("x-demo-user");
+    const email = user?.email ?? fallbackEmail;
 
-    if (!user) {
+    if (!email) {
       return NextResponse.json(
         apiErrorResponse(new ApiError("auth_required", "Authentication is required.", 401)),
         { status: 401 },
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      const order = createOrderForUser(user.email, parsed.data.items);
+      const order = createOrderForUser(email, parsed.data.items);
       return NextResponse.json(ok(order), { status: 201 });
     } catch (error) {
       if (error instanceof ApiError) {

@@ -9,6 +9,7 @@ export function AuthScreen({ next }: { next: string }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [demoSessionValue, setDemoSessionValue] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -35,6 +36,13 @@ export function AuthScreen({ next }: { next: string }) {
 
     setMessage(payload.data.message);
     setPreviewUrl(payload.data.previewUrl ?? null);
+    setDemoSessionValue(payload.data.demoSessionValue ?? null);
+    if (payload.data.mode === "demo") {
+      window.localStorage.setItem("ploottest_demo_user", email);
+    }
+    if (payload.data.demoSessionValue) {
+      document.cookie = `ploottest_session=${payload.data.demoSessionValue}; path=/; SameSite=Lax`;
+    }
     setLoading(false);
   }
 
