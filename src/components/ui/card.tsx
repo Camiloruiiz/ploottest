@@ -7,7 +7,9 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
         border: "1px solid var(--border)",
         background: "var(--card)",
         color: "var(--card-foreground)",
-        boxShadow: "0 18px 60px rgba(23, 18, 15, 0.05)",
+        backdropFilter: "blur(24px)",
+        boxShadow:
+          "0 22px 70px rgba(2, 4, 14, 0.42), inset 0 1px 0 rgba(221, 228, 255, 0.04), 0 0 0 1px rgba(120, 141, 255, 0.04)",
       }}
       {...props}
     />

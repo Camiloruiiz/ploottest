@@ -50,7 +50,7 @@ export function AuthScreen({ next }: { next: string }) {
     <main className="shell auth-shell">
       <Card className="auth-card">
         <CardHeader>
-          <p className="eyebrow">Auth Feature</p>
+          <div className="orbit-tag">Portal access</div>
           <CardTitle>Sign in with a magic link</CardTitle>
         </CardHeader>
         <CardContent>
@@ -69,7 +69,7 @@ export function AuthScreen({ next }: { next: string }) {
               {loading ? "Sending..." : "Send magic link"}
             </Button>
           </form>
-          {message ? <p style={{ marginTop: 16 }}>{message}</p> : null}
+          {message ? <p className="minimal-copy" style={{ marginTop: 16 }}>{message}</p> : null}
           {previewUrl ? (
             <Button asChild style={{ marginTop: 12 }}>
               <a href={previewUrl}>Open demo magic link</a>

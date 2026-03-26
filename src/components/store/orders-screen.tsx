@@ -59,28 +59,26 @@ export function OrdersScreen({ user }: { user: SessionUser | null }) {
       <main className="shell">
         <section className="catalog-shell">
           <div className="section-heading">
-            <div>
-              <p className="eyebrow">Orders Feature</p>
-              <h1>Your order history</h1>
-            </div>
+            <h1>Your order history</h1>
           </div>
 
-          {ordersQuery.isLoading ? <p>Loading orders...</p> : null}
-          {ordersQuery.isError ? <p>Orders are currently unavailable.</p> : null}
-          {!effectiveEmail ? <p>Sign in to review your orders.</p> : null}
-          {!ordersQuery.isLoading && effectiveEmail && !ordersQuery.data?.length ? <p>No orders yet.</p> : null}
+          {ordersQuery.isLoading ? <div className="status-block">Loading orders...</div> : null}
+          {ordersQuery.isError ? <div className="status-block">Orders are currently unavailable.</div> : null}
+          {!effectiveEmail ? <div className="status-block">Sign in to review your orders.</div> : null}
+          {!ordersQuery.isLoading && effectiveEmail && !ordersQuery.data?.length ? (
+            <div className="status-block">No orders yet.</div>
+          ) : null}
 
           <div className="order-list">
             {ordersQuery.data?.map((order) => (
               <Card key={order.id}>
                 <CardHeader>
-                  <CardTitle>{order.status}</CardTitle>
+                  <div className="order-card-heading">
+                    <CardTitle>{order.status}</CardTitle>
+                    <div className="orbit-tag">{formatDate(order.created_at)}</div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="summary-row">
-                    <span>Created</span>
-                    <strong>{formatDate(order.created_at)}</strong>
-                  </div>
                   <div className="summary-row">
                     <span>Total</span>
                     <strong>{formatCurrency(order.total_cents)}</strong>

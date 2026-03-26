@@ -118,7 +118,7 @@ export async function createDemoOrderViaUi(page: Page) {
   await page.goto("/");
   await page.getByTestId(`add-to-cart-${ATLAS_ID}`).click();
   await page.getByRole("link", { name: /Cart \(1\)/i }).click();
-  await page.getByRole("button", { name: "Checkout now" }).click();
+  await page.getByRole("button", { name: "Checkout" }).click();
   await page.waitForURL(/\/orders/);
 }
 

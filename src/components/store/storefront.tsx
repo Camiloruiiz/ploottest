@@ -103,24 +103,15 @@ export function Storefront({
       <StoreHeader user={user} cartCount={itemCount} />
       <main className="shell">
         <section className="hero">
-          <div>
-            <p className="eyebrow">Catalog Feature</p>
-            <h1>Build the order flow on top of a catalog that already feels alive.</h1>
-            <p className="lede">
-              Search, sort and filter inventory, then push products into a persistent cart without leaving the page.
-            </p>
-          </div>
-          <Card>
+          <Card className="hero-panel">
             <CardHeader>
-              <CardTitle>Cart pulse</CardTitle>
+              <div className="orbit-tag">Dreamlike catalog</div>
+              <CardTitle>Collect what you want. Drift past the rest.</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="stat-number">{itemCount}</p>
-              <p className="stat-label">items ready for checkout</p>
-              <p className="stat-total">{formatCurrency(totalCents)}</p>
-              <Button asChild style={{ width: "100%", marginTop: 16 }}>
-                <Link href="/cart">Open cart</Link>
-              </Button>
+              <p className="lede">
+                Search fast, sort quietly, and move straight from discovery to checkout.
+              </p>
             </CardContent>
           </Card>
         </section>
@@ -128,7 +119,7 @@ export function Storefront({
         <section className="catalog-shell">
           <Card>
             <CardHeader>
-              <CardTitle>Find the right gear</CardTitle>
+              <CardTitle>Catalog</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="controls-grid">
@@ -159,14 +150,14 @@ export function Storefront({
             </CardContent>
           </Card>
 
-          {productsQuery.isLoading ? <p>Loading catalog...</p> : null}
-          {productsQuery.isError ? <p>Catalog is currently unavailable.</p> : null}
+          {productsQuery.isLoading ? <div className="status-block">Loading catalog...</div> : null}
+          {productsQuery.isError ? <div className="status-block">Catalog is currently unavailable.</div> : null}
 
           <div className="product-grid">
             {products.map((product) => (
               <Card key={product.id}>
                 <CardHeader>
-                  <p className="eyebrow">{product.stock > 0 ? "In stock" : "Sold out"}</p>
+                  <div className="orbit-tag">{product.stock > 0 ? "In stock" : "Sold out"}</div>
                   <CardTitle>{product.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -199,7 +190,7 @@ export function Storefront({
           {!productsQuery.isLoading && !products.length ? (
             <Card>
               <CardContent>
-                <p style={{ margin: 0 }}>No products matched the current filters.</p>
+                <p className="minimal-copy">No products matched the current filters.</p>
               </CardContent>
             </Card>
           ) : null}

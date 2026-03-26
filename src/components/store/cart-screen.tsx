@@ -60,10 +60,7 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
       <main className="shell">
         <section className="catalog-shell">
           <div className="section-heading">
-            <div>
-              <p className="eyebrow">Cart Feature</p>
-              <h1>Your purchase draft</h1>
-            </div>
+            <h1>Your purchase draft</h1>
             <Button variant="outline" onClick={clear} disabled={!state.items.length}>
               Empty cart
             </Button>
@@ -75,7 +72,10 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
                 state.items.map((item) => (
                   <Card key={item.product_id}>
                     <CardHeader>
-                      <CardTitle>{item.name}</CardTitle>
+                      <div className="cart-card-heading">
+                        <CardTitle>{item.name}</CardTitle>
+                        <div className="orbit-tag">{item.quantity} in orbit</div>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <div className="cart-row">
@@ -100,7 +100,9 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
               ) : (
                 <Card>
                   <CardContent>
-                    <p style={{ marginBottom: 12 }}>Your cart is empty.</p>
+                    <p className="minimal-copy" style={{ marginBottom: 12 }}>
+                      Your cart is empty.
+                    </p>
                     <Button asChild>
                       <Link href="/">Back to catalog</Link>
                     </Button>
@@ -125,11 +127,11 @@ export function CartScreen({ user }: { user: SessionUser | null }) {
                 {message ? <p className="error-text">{message}</p> : null}
                 {effectiveEmail ? (
                   <Button style={{ width: "100%", marginTop: 18 }} disabled={!itemCount || submitting} onClick={checkout}>
-                    {submitting ? "Placing order..." : "Checkout now"}
+                    {submitting ? "Aligning checkout..." : "Checkout"}
                   </Button>
                 ) : (
                   <Button asChild style={{ width: "100%", marginTop: 18 }}>
-                    <Link href="/auth?next=/cart">Sign in to checkout</Link>
+                    <Link href="/auth?next=/cart">Sign in</Link>
                   </Button>
                 )}
               </CardContent>

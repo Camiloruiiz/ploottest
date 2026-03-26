@@ -33,10 +33,7 @@ export function StoreHeader({
       <div className="topbar">
         <Link href="/" className="brand">
           <span className="brand-mark">PT</span>
-          <div>
-            <strong>PlootTest</strong>
-            <p>Field-ready essentials for the MVP store.</p>
-          </div>
+          <strong>PlootTest</strong>
         </Link>
 
         <nav className="topnav">

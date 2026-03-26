@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
 
 test("catalog default view", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Build the order flow/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Collect what you want/i })).toBeVisible();
   await expect(page).toHaveScreenshot("catalog-default.png", { fullPage: true });
 });
 
@@ -122,7 +122,7 @@ test("cart checkout error state", async ({ page }) => {
   );
 
   await page.goto("/cart");
-  await page.getByRole("button", { name: "Checkout now" }).click();
+  await page.getByRole("button", { name: "Checkout" }).click();
   await expect(page.getByText("Insufficient stock for Atlas Trail Jacket.")).toBeVisible();
   await expect(page).toHaveScreenshot("cart-error.png", { fullPage: true });
 });

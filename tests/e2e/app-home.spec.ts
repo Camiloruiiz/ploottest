@@ -10,7 +10,7 @@ test.beforeEach(async ({ page, request }) => {
 });
 
 test("catalog supports search and sort", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: /Build the order flow/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Collect what you want/i })).toBeVisible();
   await page.getByLabel("Search products").fill("Pack");
   await expect(page.getByText("Mercury Field Pack")).toBeVisible();
   await page.locator("select").nth(1).selectOption("price_desc");
@@ -35,8 +35,8 @@ test("user can sign in, checkout and review orders", async ({ page }) => {
   await page.getByRole("link", { name: /Cart \(1\)/i }).click();
   await expect(page.getByRole("heading", { name: "Your purchase draft" })).toBeVisible();
   await expect(page.getByText("Atlas Trail Jacket")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Checkout now" })).toBeEnabled();
-  await page.getByRole("button", { name: "Checkout now" }).click();
+  await expect(page.getByRole("button", { name: "Checkout" })).toBeEnabled();
+  await page.getByRole("button", { name: "Checkout" }).click();
   await expect(page).toHaveURL(/\/orders/);
   await expect(page.getByText("Atlas Trail Jacket x 1")).toBeVisible();
 });
