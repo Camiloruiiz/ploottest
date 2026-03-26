@@ -117,9 +117,11 @@ Estado: posterior
 
 - cache para catalogo
 - read replicas
-- desacoplar procesamiento de pedidos
+- desacoplar procesamiento de pedidos y otras operaciones no inmediatas
 - observabilidad ampliada con logs y trazas
 - posible separacion de responsabilidades por dominios
+- automatizacion operativa de validacion y despliegue
+- posible evolucion estructural del repositorio si el sistema crece
 - CDN para assets
 
 ## Vision posterior y evolucion deseada
@@ -128,18 +130,25 @@ Estas capacidades no forman parte del alcance actual ni del siguiente paso inmed
 
 ### Procesamiento asincrono
 
-- uso de colas o background jobs para pedidos, actualizaciones de stock y notificaciones
-- desacoplar trabajo costoso del ciclo request/response
+- evolucion hacia colas, jobs o procesamiento desacoplado para operaciones no inmediatas
+- reducir carga dentro del ciclo request/response
 
-### Diseno orientado a eventos
+### Arquitectura orientada a eventos
 
-- incorporacion de eventos de dominio como `OrderCreated`, `StockUpdated` o `PaymentConfirmed`
-- mejor desacoplamiento para analytics, notificaciones e integraciones futuras
+- evolucion hacia mecanismos de comunicacion mas desacoplados entre capacidades del sistema
+- mejor base para integraciones, automatizaciones y extension funcional
 
-### Modularidad por dominios
+### Modularidad y monorepo
 
 - evolucion hacia limites mas claros entre catalogo, pedidos y usuarios
-- posible paso posterior a un monolito mas modular o a separacion de responsabilidades
+- posible paso posterior a un monolito mas modular
+- posible evolucion a monorepo si aparecen nuevas apps, paquetes o servicios auxiliares
+
+### CI/CD
+
+- validacion automatica de cambios
+- ejecucion automatica de pruebas
+- despliegues mas controlados entre entornos
 
 ### Observabilidad y trazabilidad
 

@@ -838,11 +838,13 @@ La arquitectura actual prioriza una entrega vertical simple, operativa y despleg
 
 Direccion de evolucion deseada:
 
-- procesamiento asincrono para pedidos, stock y notificaciones mediante colas o workers
-- eventos de dominio como `OrderCreated`, `StockUpdated` o `PaymentConfirmed`
+- procesamiento asincrono para desacoplar operaciones que no necesiten completarse dentro del ciclo request/response
+- evolucion hacia una arquitectura mas orientada a eventos para separar mejor responsabilidades y flujos
 - modularizacion progresiva de dominios como catalogo, pedidos y usuarios
-- observabilidad avanzada con logs estructurados y trazas
-- integraciones futuras con servicios externos, analytics o automatizaciones
+- posible evolucion futura del repositorio a un esquema de monorepo si aparecen nuevas aplicaciones, paquetes o servicios auxiliares
+- incorporacion de CI/CD para validacion automatica, pruebas y despliegues controlados
+- observabilidad avanzada con mejores capacidades de monitoreo, trazabilidad y diagnostico
+- integraciones futuras con servicios externos, automatizaciones o capacidades adicionales del producto
 
 Estas capacidades no forman parte del alcance actual ni del siguiente desarrollo prioritario, pero sirven como guia para evolucionar el sistema sin romper la base existente.
 
