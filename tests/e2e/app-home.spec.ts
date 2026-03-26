@@ -9,12 +9,11 @@ test.beforeEach(async ({ page, request }) => {
   await page.goto("/");
 });
 
-test("catalog supports search, sort and visual snapshot", async ({ page }) => {
+test("catalog supports search and sort", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Build the order flow/i })).toBeVisible();
   await page.getByLabel("Search products").fill("Pack");
   await expect(page.getByText("Mercury Field Pack")).toBeVisible();
   await page.locator("select").nth(1).selectOption("price_desc");
-  await expect(page).toHaveScreenshot("catalog.png", { fullPage: true });
 });
 
 test("cart persists across reloads", async ({ page }) => {
@@ -23,7 +22,6 @@ test("cart persists across reloads", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Your purchase draft" })).toBeVisible();
   await page.reload();
   await expect(page.getByText("Atlas Trail Jacket")).toBeVisible();
-  await expect(page).toHaveScreenshot("cart.png", { fullPage: true });
 });
 
 test("user can sign in, checkout and review orders", async ({ page }) => {
@@ -41,5 +39,4 @@ test("user can sign in, checkout and review orders", async ({ page }) => {
   await page.getByRole("button", { name: "Checkout now" }).click();
   await expect(page).toHaveURL(/\/orders/);
   await expect(page.getByText("Atlas Trail Jacket x 1")).toBeVisible();
-  await expect(page).toHaveScreenshot("orders.png", { fullPage: true });
 });

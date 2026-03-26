@@ -4,7 +4,7 @@
 
 ### 1.1 Proposito
 
-Este documento describe la arquitectura del estado actual del sistema y su siguiente fase funcional. Hoy el proyecto ya cuenta con una base tecnica ejecutable: app Next.js operativa, integracion con Supabase, bootstrap desde `.json`, contratos validados y testing base. La siguiente fase se centra en completar el dominio funcional de catalogo, carrito, checkout y pedidos.
+Este documento describe la arquitectura del estado actual del sistema y su siguiente fase funcional. Hoy el proyecto ya cuenta con una base tecnica ejecutable y con una primera capa funcional operativa: catalogo, carrito, autenticacion y consulta de pedidos. El siguiente paso prioritario es completar el checkout real con Supabase para persistir pedidos, lineas y stock en la base de datos.
 
 Decision de velocidad:
 
@@ -16,6 +16,11 @@ Decision de velocidad:
 Estado actual implementado:
 
 - app Next.js operativa con pantalla base
+- catalogo de productos con busqueda, filtros y paginacion
+- carrito persistido en cliente
+- autenticacion por magic link
+- consulta de pedidos del usuario
+- API minima para productos y pedidos
 - validacion de variables de entorno
 - clientes de Supabase para navegador, servidor y admin
 - carga inicial de productos desde archivos `.json`
@@ -26,13 +31,11 @@ Estado actual implementado:
 
 Siguiente alcance funcional:
 
-- catalogo de productos
-- carrito persistido en cliente
-- checkout con validacion de stock
-- autenticacion de usuarios
-- consulta de pedidos propios
-- API minima para productos y pedidos
-- despliegue operativo en Vercel si no se ha ejecutado ya en entorno objetivo
+- checkout real con validacion de stock sobre Supabase
+- persistencia real de `orders` y `order_items`
+- descuento real de stock en base de datos
+- endurecimiento del flujo de compra con errores estructurados
+- ampliacion de pruebas sobre el flujo real con Supabase
 
 Requerimientos relacionados:
 
@@ -214,14 +217,15 @@ Estado actual:
 - base del proyecto e integracion con Supabase completadas
 - bootstrap de productos desde `.json` disponible
 - validaciones y testing base disponibles
-- estructura de dominios preparada, pero no completada funcionalmente
+- catalogo, carrito, autenticacion y consulta de pedidos ya operativos
+- checkout disponible en modo demo y parcial en modo Supabase
 
 Siguiente fase:
 
-1. implementar catalogo real sobre la base actual
-2. implementar carrito en `localStorage`
-3. implementar login y area de pedidos
-4. implementar checkout y cierre operativo de despliegue en Vercel
+1. implementar `POST /api/v1/orders` real sobre Supabase
+2. persistir `orders` y `order_items`
+3. descontar stock de forma consistente
+4. ampliar pruebas sobre el flujo real de compra
 
 Todo lo demas queda como evolucion posterior.
 
@@ -242,11 +246,11 @@ Whitebox del sistema:
 
 | Bloque | Responsabilidad principal |
 | --- | --- |
-| UI/App | implementado como base operativa y pantalla de estado |
-| Catalogo | preparado estructuralmente, pendiente de implementacion funcional |
-| Carrito | preparado estructuralmente, pendiente de implementacion funcional |
-| Checkout/Pedidos | preparado estructuralmente, pendiente de implementacion funcional |
-| Auth | preparado estructuralmente, pendiente de implementacion funcional |
+| UI/App | implementado como storefront operativa |
+| Catalogo | implementado con consulta, busqueda, filtros y paginacion |
+| Carrito | implementado con persistencia en `localStorage` |
+| Checkout/Pedidos | implementado en modo demo y parcial en modo Supabase |
+| Auth | implementado con magic link |
 | Persistencia | implementado mediante Supabase y carga inicial |
 
 ### 5.2 Descomposicion interna propuesta
